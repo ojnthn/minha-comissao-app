@@ -1,13 +1,20 @@
 import { useNavigate } from 'react-router-dom';
-import { DashboardSummary, OnboardingCard, spacing } from 'minhas-venda-design-system';
+import { DashboardSummary, OnboardingCard, colors, fontSize, fontWeight, spacing } from 'minhas-venda-design-system';
 import type { DashboardContainer } from '../../dashboard.container';
 import { useDashboard } from '../hooks/use-dashboard.hook';
 
 export interface DashboardPageProps {
   dashboardContainer: DashboardContainer;
+  userName: string;
 }
 
-export function DashboardPage({ dashboardContainer }: DashboardPageProps) {
+function greetingForHour(hour: number): string {
+  if (hour < 12) return 'Bom dia';
+  if (hour < 18) return 'Boa tarde';
+  return 'Boa noite';
+}
+
+export function DashboardPage({ dashboardContainer, userName }: DashboardPageProps) {
   const navigate = useNavigate();
   const { summary, loading, error } = useDashboard(dashboardContainer);
 
@@ -17,6 +24,10 @@ export function DashboardPage({ dashboardContainer }: DashboardPageProps) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: spacing[24] }}>
+      <h2 style={{ margin: 0, fontSize: fontSize[22], fontWeight: fontWeight.bold, color: colors.text.primary }}>
+        {greetingForHour(new Date().getHours())}, {userName}
+      </h2>
+
       {summary.needsOnboarding && (
         <OnboardingCard
           title="Vamos começar!"

@@ -1,5 +1,5 @@
 import type { AuthRepository } from '../../domain/repositories/auth.repository';
-import type { LoginCredentials, Session } from '../../domain/entities/session.entity';
+import type { LoginCredentials, Session, User } from '../../domain/entities/session.entity';
 import { createAuthHttpDatasource } from '../datasources/auth-http.datasource';
 import { createSessionStorageDatasource } from '../datasources/session-storage.datasource';
 
@@ -18,6 +18,10 @@ export function createAuthRepository(): AuthRepository {
     },
     getToken() {
       return storageDatasource.getToken();
+    },
+    async getMe(): Promise<User> {
+      const response = await httpDatasource.getMe();
+      return { name: response.nome, email: response.email };
     },
   };
 }

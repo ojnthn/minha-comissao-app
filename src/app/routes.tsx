@@ -8,6 +8,8 @@ import { OrdersPage } from '../features/orders/presentation/pages/orders.page';
 import { ProductsPage } from '../features/products/presentation/pages/products.page';
 import { LoginPage } from '../features/auth/presentation/pages/login.page';
 import { authContainer } from '../features/auth/auth.container';
+import { useCurrentUser } from '../features/auth/presentation/hooks/use-current-user.hook';
+import { getInitials } from '../features/auth/domain/entities/session.entity';
 import { dashboardContainer } from './dashboard.composition';
 
 /**
@@ -29,7 +31,7 @@ const PATH_BY_SCREEN: Record<SidebarScreen, string> = {
 };
 
 const TITLE_BY_SCREEN: Record<SidebarScreen, string> = {
-  dashboard: 'Resumo',
+  dashboard: 'Resumo de vendas',
   novo: 'Novo Pedido',
   pedidos: 'Meus Pedidos',
   produtos: 'Minhas Chapas',
@@ -39,11 +41,12 @@ function screenForPath(pathname: string): SidebarScreen {
   return SCREEN_BY_PATH[pathname] ?? 'dashboard';
 }
 
-function ShellLayout({ children }: { children: ReactNode }) {
+function ShellLayout({ children }: { children: (userName: string) => ReactNode }) {
   const [expanded, setExpanded] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
+  const { user } = useCurrentUser();
   const activeScreen = screenForPath(location.pathname);
 
   if (!authContainer.isAuthenticated()) {
@@ -63,14 +66,13 @@ function ShellLayout({ children }: { children: ReactNode }) {
         showNotifications: false,
         theme,
         onToggleTheme: toggleTheme,
-        // TODO: trocar por dado real quando `auth` consumir GET /auth (ver TODO.md)
-        userName: 'Indisponível',
-        userRole: 'Indisponível',
-        userInitials: '?',
+        userName: user?.name ?? 'Indisponível',
+        userRole: user?.email ?? 'Indisponível',
+        userInitials: user ? getInitials(user.name) : '?',
       }}
       title={TITLE_BY_SCREEN[activeScreen]}
     >
-      {children}
+      {children(user?.name ?? 'Indisponível')}
     </AppShellTemplate>
   );
 }
@@ -85,13 +87,18 @@ export function AppRoutes() {
         path="/*"
         element={
           <ShellLayout>
-            <Routes>
-              <Route path="/" element={<DashboardPage dashboardContainer={dashboardContainer} />} />
-              <Route path="/orders" element={<OrdersPage />} />
-              <Route path="/orders/new" element={<NewOrderPage />} />
-              <Route path="/products" element={<ProductsPage />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
+            {(userName) => (
+              <Routes>
+                <Route
+                  path="/"
+                  element={<DashboardPage dashboardContainer={dashboardContainer} userName={userName} />}
+                />
+                <Route path="/orders" element={<OrdersPage />} />
+                <Route path="/orders/new" element={<NewOrderPage />} />
+                <Route path="/products" element={<ProductsPage />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            )}
           </ShellLayout>
         }
       />

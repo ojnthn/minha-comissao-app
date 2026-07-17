@@ -15,4 +15,5 @@ export const authContainer = {
   login: authRepository.login,
   logout: authRepository.logout,
   isAuthenticated: () => authRepository.getToken() !== null,
+  getMe: authRepository.getMe,
 };
