@@ -1,6 +1,14 @@
+import { createGetDashboardSummaryUseCase } from './domain/usecases/get-dashboard-summary.usecase';
+import type { DashboardDataPort } from './domain/repositories/dashboard.repository';
+
 /**
- * DI local da feature "dashboard": datasource -> repository -> usecases.
- * Preencher ao implementar esta feature — ver docs/new-feature-guide.md.
- * presentation/ importa só daqui, nunca de data/ ou domain/ diretamente.
+ * Fábrica, não instância pronta: o port (dados de orders/products) só existe
+ * depois da composição entre features em app/dashboard.composition.ts.
  */
-export {};
+export function createDashboardContainer(port: DashboardDataPort) {
+  return {
+    getDashboardSummary: createGetDashboardSummaryUseCase(port),
+  };
+}
+
+export type DashboardContainer = ReturnType<typeof createDashboardContainer>;

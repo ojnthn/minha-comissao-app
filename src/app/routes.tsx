@@ -8,6 +8,7 @@ import { ProductsPage } from '../features/products/presentation/pages/products.p
 import { CommissionRatesPage } from '../features/commission-rates/presentation/pages/commission-rates.page';
 import { LoginPage } from '../features/auth/presentation/pages/login.page';
 import { authContainer } from '../features/auth/auth.container';
+import { dashboardContainer } from './dashboard.composition';
 
 /**
  * Única fonte de verdade path <-> screen (Sidebar.activeScreen).
@@ -77,7 +78,7 @@ export function AppRoutes() {
         element={
           <ShellLayout>
             <Routes>
-              <Route path="/" element={<DashboardPage />} />
+              <Route path="/" element={<DashboardPage dashboardContainer={dashboardContainer} />} />
               <Route path="/orders" element={<OrdersPage />} />
               <Route path="/orders/new" element={<NewOrderPage />} />
               <Route path="/products" element={<ProductsPage />} />

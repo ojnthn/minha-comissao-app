@@ -1,6 +1,8 @@
-/**
- * DI local da feature "orders": datasource -> repository -> usecases.
- * Preencher ao implementar esta feature — ver docs/new-feature-guide.md.
- * presentation/ importa só daqui, nunca de data/ ou domain/ diretamente.
- */
-export {};
+import { createOrderRepository } from './data/repositories/order.repository.impl';
+import { createListRecentOrdersUseCase } from './domain/usecases/list-recent-orders.usecase';
+
+const orderRepository = createOrderRepository();
+
+export const ordersContainer = {
+  listRecentOrders: createListRecentOrdersUseCase(orderRepository),
+};

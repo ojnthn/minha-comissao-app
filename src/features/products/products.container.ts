@@ -1,6 +1,8 @@
-/**
- * DI local da feature "products": datasource -> repository -> usecases.
- * Preencher ao implementar esta feature — ver docs/new-feature-guide.md.
- * presentation/ importa só daqui, nunca de data/ ou domain/ diretamente.
- */
-export {};
+import { createProductRepository } from './data/repositories/product.repository.impl';
+import { createHasProductsUseCase } from './domain/usecases/has-products.usecase';
+
+const productRepository = createProductRepository();
+
+export const productsContainer = {
+  hasProducts: createHasProductsUseCase(productRepository),
+};
