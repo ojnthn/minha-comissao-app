@@ -1,7 +1,7 @@
 # Checklist — criar/completar uma feature
 
 O scaffold de pastas de todas as features (`orders`, `products`,
-`commission-rates`, `carpenters`, `dashboard`, `auth`) já existe em
+`carpenters`, `dashboard`, `auth`) já existe em
 `src/features/<feature>/` com `domain/`, `data/`, `presentation/` e
 `<feature>.container.ts` vazios (ou com página placeholder, quando a rota
 já existe em `app/routes.tsx`). Pra implementar a feature de verdade:

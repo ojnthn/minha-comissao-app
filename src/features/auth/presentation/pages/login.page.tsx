@@ -50,7 +50,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
           <div style={{ fontSize: fontSize[20], fontWeight: fontWeight.extrabold, letterSpacing: '-0.2px' }}>
             Minha Comissão
           </div>
-          <div style={{ fontSize: fontSize[14], color: colors.text.muted }}>Entre para continuar</div>
+          <div style={{ fontSize: fontSize[14], color: colors.text.dim }}>Entre para continuar</div>
         </div>
 
         {error && (

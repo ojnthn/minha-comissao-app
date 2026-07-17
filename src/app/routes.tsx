@@ -1,11 +1,11 @@
 import { useState, type ReactNode } from 'react';
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { AppShellTemplate, type SidebarScreen } from 'minhas-venda-design-system';
+import { useTheme } from '../shared/hooks/use-theme.hook';
 import { DashboardPage } from '../features/dashboard/presentation/pages/dashboard.page';
 import { NewOrderPage } from '../features/orders/presentation/pages/new-order.page';
 import { OrdersPage } from '../features/orders/presentation/pages/orders.page';
 import { ProductsPage } from '../features/products/presentation/pages/products.page';
-import { CommissionRatesPage } from '../features/commission-rates/presentation/pages/commission-rates.page';
 import { LoginPage } from '../features/auth/presentation/pages/login.page';
 import { authContainer } from '../features/auth/auth.container';
 import { dashboardContainer } from './dashboard.composition';
@@ -19,7 +19,6 @@ const SCREEN_BY_PATH: Record<string, SidebarScreen> = {
   '/orders/new': 'novo',
   '/orders': 'pedidos',
   '/products': 'produtos',
-  '/commission-rates': 'percentuais',
 };
 
 const PATH_BY_SCREEN: Record<SidebarScreen, string> = {
@@ -27,7 +26,6 @@ const PATH_BY_SCREEN: Record<SidebarScreen, string> = {
   novo: '/orders/new',
   pedidos: '/orders',
   produtos: '/products',
-  percentuais: '/commission-rates',
 };
 
 const TITLE_BY_SCREEN: Record<SidebarScreen, string> = {
@@ -35,7 +33,6 @@ const TITLE_BY_SCREEN: Record<SidebarScreen, string> = {
   novo: 'Novo Pedido',
   pedidos: 'Meus Pedidos',
   produtos: 'Minhas Chapas',
-  percentuais: 'Comissões',
 };
 
 function screenForPath(pathname: string): SidebarScreen {
@@ -46,6 +43,7 @@ function ShellLayout({ children }: { children: ReactNode }) {
   const [expanded, setExpanded] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
   const activeScreen = screenForPath(location.pathname);
 
   if (!authContainer.isAuthenticated()) {
@@ -59,6 +57,16 @@ function ShellLayout({ children }: { children: ReactNode }) {
         activeScreen,
         onNavigate: (screen) => navigate(PATH_BY_SCREEN[screen]),
         onToggleExpanded: () => setExpanded((current) => !current),
+      }}
+      topbar={{
+        showSearch: false,
+        showNotifications: false,
+        theme,
+        onToggleTheme: toggleTheme,
+        // TODO: trocar por dado real quando `auth` consumir GET /auth (ver TODO.md)
+        userName: 'Indisponível',
+        userRole: 'Indisponível',
+        userInitials: '?',
       }}
       title={TITLE_BY_SCREEN[activeScreen]}
     >
@@ -82,7 +90,6 @@ export function AppRoutes() {
               <Route path="/orders" element={<OrdersPage />} />
               <Route path="/orders/new" element={<NewOrderPage />} />
               <Route path="/products" element={<ProductsPage />} />
-              <Route path="/commission-rates" element={<CommissionRatesPage />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </ShellLayout>

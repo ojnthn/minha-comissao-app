@@ -13,7 +13,10 @@ percentuais de comissão e registra pedidos. O app calcula valor do pedido e
 comissão a partir do que o usuário digita — nenhum cálculo é feito no backend
 nem no design system.
 
-5 telas (`screen` é valor fixo do `Sidebar` do design-system — não traduzir):
+4 telas (`screen` é valor fixo do `Sidebar` do design-system — não traduzir).
+Tela `percentuais`/"Comissões" foi removida (Sidebar, rotas e feature
+`commission-rates`) enquanto `ComissaoPorcentagem` não tiver CRUD exposto no
+foundation — ver `TODO.md`.
 
 | screen key    | Página          | Organism principal          |
 | -------------- | --------------- | ---------------------------- |
@@ -21,13 +24,12 @@ nem no design system.
 | `novo`         | Novo Pedido     | `PedidoForm`                 |
 | `pedidos`      | Meus Pedidos    | `PedidosList`                |
 | `produtos`     | Minhas Chapas   | `ProdutosList` + `ProdutoForm` |
-| `percentuais`  | Comissões       | `PercentuaisList` + `PercentualForm` |
 
 ## 2. Stack e decisões de arquitetura
 
 - React 19 + TypeScript
 - Vite (SPA) — sem SSR, app interno de uso autenticado
-- `react-router-dom` para roteamento entre as 5 telas
+- `react-router-dom` para roteamento entre as 4 telas
 - Data-fetching: `fetch` nativo + hooks próprios (sem TanStack Query) —
   cálculo de negócio (valor/comissão) sempre no app, nunca delegado a lib
 - Gerenciador de pacotes: pnpm (padrão dos repos irmãos)
@@ -40,7 +42,8 @@ nem no design system.
   `<domínio>.<sufixo-da-camada>.ts(x)`, kebab-case pra multi-palavra — ex.:
   `order.repository.ts`, `create-order.usecase.ts`,
   `use-order-form.hook.ts`. Features: `orders` (pedidos), `products`
-  (produtos), `commission-rates` (percentuais), `carpenters` (marceneiro).
+  (produtos), `carpenters` (marceneiro). Feature `commission-rates`
+  (percentuais) foi removida — ver seção 1.
   Exceção: os campos dentro de `*.dto.ts` continuam em português, pois
   espelham o JSON real da API do foundation — a tradução acontece no
   `*.repository.impl.ts`, na fronteira entre `data` e `domain`. Ver
@@ -113,7 +116,6 @@ src/
       presentation/     # pages/, hooks/
       orders.container.ts   # DI local: datasource -> repository -> usecases
     products/           (produtos — mesma receita)
-    commission-rates/   (percentuais — idem)
     carpenters/          (marceneiro — idem)
     dashboard/           (idem)
     auth/                (idem)
