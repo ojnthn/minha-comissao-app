@@ -34,9 +34,9 @@ export function DashboardPage({ dashboardContainer }: DashboardPageProps) {
           id: order.id,
           cliente: order.carpenterName,
           produtoNome: order.productNames,
-          dataFmt: '—',
+          dataFmt: order.dateFormatted,
           valorFmt: order.valueFormatted,
-          comissaoFmt: '—',
+          comissaoFmt: order.commissionFormatted,
         }))}
       />
     </div>

@@ -7,9 +7,13 @@ function toDomain(dto: PedidoDto): Order {
   return {
     id: dto.id,
     code: dto.codigo,
-    valueFormatted: dto.valor,
+    dateFormatted: dto.data,
+    valueFormatted: dto.valor.total,
+    commissionFormatted: dto.valor.comissao,
     carpenterId: dto.marceneiro.id,
     carpenterName: dto.marceneiro.nome,
+    sellerId: dto.vendedor.id,
+    sellerName: dto.vendedor.nome,
     products: dto.produtos.map((produto) => ({
       productId: produto.id,
       productName: produto.nome,
@@ -23,10 +27,10 @@ export function createOrderRepository(): OrderRepository {
   const datasource = createOrderHttpDatasource();
 
   return {
-    async list({ page, limit }: OrderListParams): Promise<OrderListResult> {
-      const response = await datasource.list(page, limit);
+    async list(params: OrderListParams): Promise<OrderListResult> {
+      const response = await datasource.list(params);
       return {
-        orders: response.data.map(toDomain),
+        orders: response.detalhes.map(toDomain),
         pagination: response.pagination,
       };
     },

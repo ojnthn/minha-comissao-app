@@ -5,12 +5,16 @@ export interface OrderProductLine {
   percentFormatted: string;
 }
 
-/** GET /pedidos só devolve valor/porcentagem como string formatada — sem campo numérico nem de comissão nessa rota (ver TODO.md). */
+/** `valueFormatted`/`commissionFormatted` vêm formatados (BRL) da API — nunca usar como fonte numérica pra cálculo (ver CLAUDE.md seção 4). */
 export interface Order {
   id: number;
   code: string;
+  dateFormatted: string;
   valueFormatted: string;
+  commissionFormatted: string;
   carpenterId: number;
   carpenterName: string;
+  sellerId: number;
+  sellerName: string;
   products: OrderProductLine[];
 }

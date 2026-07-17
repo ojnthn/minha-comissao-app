@@ -13,7 +13,9 @@ export const dashboardContainer = createDashboardContainer({
       id: String(order.id),
       carpenterName: order.carpenterName,
       productNames: order.products.map((product) => product.productName).join(', '),
+      dateFormatted: order.dateFormatted,
       valueFormatted: order.valueFormatted,
+      commissionFormatted: order.commissionFormatted,
     }));
   },
   hasProducts: productsContainer.hasProducts,

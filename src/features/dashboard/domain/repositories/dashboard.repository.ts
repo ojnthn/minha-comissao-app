@@ -2,7 +2,9 @@ export interface DashboardRecentOrder {
   id: string;
   carpenterName: string;
   productNames: string;
+  dateFormatted: string;
   valueFormatted: string;
+  commissionFormatted: string;
 }
 
 /**
