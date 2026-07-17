@@ -41,7 +41,10 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
   const response = await fetch(`${baseUrl}${path}`, { ...init, headers });
 
-  if (response.status === 401) {
+  // Só força logout/redirect se a chamada já ia autenticada — um 401 sem
+  // token é resposta normal de endpoint público (ex.: /auth/login com
+  // credencial errada), não sessão expirada.
+  if (response.status === 401 && token) {
     config.onUnauthorized();
   }
 

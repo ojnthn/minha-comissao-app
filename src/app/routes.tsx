@@ -7,6 +7,7 @@ import { OrdersPage } from '../features/orders/presentation/pages/orders.page';
 import { ProductsPage } from '../features/products/presentation/pages/products.page';
 import { CommissionRatesPage } from '../features/commission-rates/presentation/pages/commission-rates.page';
 import { LoginPage } from '../features/auth/presentation/pages/login.page';
+import { authContainer } from '../features/auth/auth.container';
 
 /**
  * Única fonte de verdade path <-> screen (Sidebar.activeScreen).
@@ -40,17 +41,15 @@ function screenForPath(pathname: string): SidebarScreen {
   return SCREEN_BY_PATH[pathname] ?? 'dashboard';
 }
 
-/**
- * TODO: guard de auth. Quando a feature `auth` existir, checar sessão via
- * `auth.container.ts` aqui (ou envolver `ShellLayout`) e redirecionar pra
- * `/login` em vez de renderizar o shell — nunca acessar sessionStorage direto
- * neste arquivo (ver docs/layers/presentation.md).
- */
 function ShellLayout({ children }: { children: ReactNode }) {
   const [expanded, setExpanded] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
   const activeScreen = screenForPath(location.pathname);
+
+  if (!authContainer.isAuthenticated()) {
+    return <Navigate to="/login" replace />;
+  }
 
   return (
     <AppShellTemplate
@@ -68,9 +67,11 @@ function ShellLayout({ children }: { children: ReactNode }) {
 }
 
 export function AppRoutes() {
+  const navigate = useNavigate();
+
   return (
     <Routes>
-      <Route path="/login" element={<LoginPage />} />
+      <Route path="/login" element={<LoginPage onLoginSuccess={() => navigate('/', { replace: true })} />} />
       <Route
         path="/*"
         element={
