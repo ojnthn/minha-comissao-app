@@ -30,15 +30,6 @@ divergência de contrato, nunca assumir/inventar endpoint ou campo.
 
 ## Frontend (`minha-comissao-app`)
 
-- [ ] **`GET /auth` (retorna `{ nome, email }` do usuário logado) já
-  existe no foundation** (`auth.controller.ts` → `MeUseCase`) mas a
-  feature `auth` daqui ainda não consome — só guarda o token
-  (`session-storage.datasource.ts`), sem nome/email. Adicionar `getMe()`
-  em `auth-http.datasource.ts`/`auth.repository.impl.ts` pra poder
-  personalizar a home ("Olá, `<nome>`") e qualquer tela que precise exibir
-  o usuário logado. Agora também bloqueia o `Topbar` (`userName`/`userRole`/
-  `userInitials` obrigatórios) — `ShellLayout` (`src/app/routes.tsx`) usa
-  `"Indisponível"`/`"?"` como placeholder até isso existir.
 - [ ] Quando o item de agregado do dashboard acima existir no backend,
   trocar o placeholder `"Indisponível"` dos `StatCard` por valor real +
   `TrendIndicator`.
