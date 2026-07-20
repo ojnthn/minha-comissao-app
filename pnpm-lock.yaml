@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@ojnthn/minhas-venda-design-system':
-        specifier: ^1.0.0
-        version: 1.0.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+        specifier: ^1.0.1
+        version: 1.0.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       react:
         specifier: ^19.2.7
         version: 19.2.7
@@ -60,8 +60,8 @@ packages:
       '@emnapi/core': ^1.7.1
       '@emnapi/runtime': ^1.7.1
 
-  '@ojnthn/minhas-venda-design-system@1.0.0':
-    resolution: {integrity: sha512-nb9U0/Qcl+rp40yNyawpm1rCVtY70zr4rpRuW0lzH8OtOtEjAk0zhxxOsEzdRvArEaAbdvPygE+zKsU6VNw8yw==, tarball: https://npm.pkg.github.com/download/@ojnthn/minhas-venda-design-system/1.0.0/86dd0e0f268edc3f6557ae53c45a25caa94f5372}
+  '@ojnthn/minhas-venda-design-system@1.0.1':
+    resolution: {integrity: sha512-3bFwE0jd5/87raswgHZIU2fTxeJod75zHSz0k4lLhp964Bmn703LtZYXSdUvT6mWWFXgQNyPfcNhGN6prgQ0Hg==, tarball: https://npm.pkg.github.com/download/@ojnthn/minhas-venda-design-system/1.0.1/01d4a9c58c79bafc7d341a764c7d4e4a443419d6}
     peerDependencies:
       react: ^19.2.7
       react-dom: ^19.2.7
@@ -568,7 +568,7 @@ snapshots:
       '@tybys/wasm-util': 0.10.3
     optional: true
 
-  '@ojnthn/minhas-venda-design-system@1.0.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
+  '@ojnthn/minhas-venda-design-system@1.0.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
     dependencies:
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
