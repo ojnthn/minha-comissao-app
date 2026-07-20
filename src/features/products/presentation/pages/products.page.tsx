@@ -41,10 +41,17 @@ export function ProductsPage() {
     hasPreviousPage,
     goToNextPage,
     goToPreviousPage,
-    commissionRates,
-    form,
+    commissionRateOptions,
+    commissionRateNameById,
+    commissionRateLoading,
+    commissionRateHasMore,
+    onCommissionRateSearchChange,
+    loadMoreCommissionRates,
+    hasAnyCommissionRate,
+    nome,
     setNome,
-    setPercentualComissaoId,
+    selectedCommissionRate,
+    setSelectedCommissionRate,
     isValid,
     isEditing,
     submitting,
@@ -54,8 +61,6 @@ export function ProductsPage() {
     remove,
     toast,
   } = useProducts(productsContainer);
-
-  const commissionRateNameById = new Map(commissionRates.map((rate) => [rate.id, rate.name]));
 
   const columns: DataTableColumn<Product>[] = [
     { key: 'name', header: 'Nome da chapa', render: (product) => product.name },
@@ -72,12 +77,20 @@ export function ProductsPage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: spacing[20] }}>
       <ProdutoForm
         title={isEditing ? 'Editar chapa' : 'Adicionar chapa'}
-        nome={form.nome}
+        nome={nome}
         onNomeChange={setNome}
-        percentualComissaoId={form.percentualComissaoId}
-        onPercentualChange={setPercentualComissaoId}
-        percentuaisOptions={commissionRates.map((rate) => ({ id: String(rate.id), optionLabel: rate.name }))}
-        semPercentuaisAviso={commissionRates.length === 0}
+        percentualComissao={
+          selectedCommissionRate
+            ? { id: String(selectedCommissionRate.id), optionLabel: selectedCommissionRate.name }
+            : null
+        }
+        onPercentualChange={(option) => setSelectedCommissionRate({ id: Number(option.id), name: option.optionLabel })}
+        percentuaisOptions={commissionRateOptions.map((rate) => ({ id: String(rate.id), optionLabel: rate.name }))}
+        onPercentuaisSearchChange={onCommissionRateSearchChange}
+        percentuaisLoading={commissionRateLoading}
+        percentuaisHasMore={commissionRateHasMore}
+        onLoadMorePercentuais={loadMoreCommissionRates}
+        semPercentuaisAviso={!commissionRateLoading && !hasAnyCommissionRate}
         isValid={isValid && !submitting}
         submitLabel={isEditing ? 'Salvar alterações' : 'Adicionar chapa'}
         onSubmit={submit}

@@ -5,7 +5,7 @@ import { createListProductsUseCase } from './domain/usecases/list-products.useca
 import { createCreateProductUseCase } from './domain/usecases/create-product.usecase';
 import { createUpdateProductUseCase } from './domain/usecases/update-product.usecase';
 import { createDeleteProductUseCase } from './domain/usecases/delete-product.usecase';
-import { createListCommissionRateOptionsUseCase } from './domain/usecases/list-commission-rate-options.usecase';
+import { createListCommissionRatesUseCase } from './domain/usecases/list-commission-rates.usecase';
 
 const productRepository = createProductRepository();
 const commissionRateRepository = createCommissionRateRepository();
@@ -16,5 +16,5 @@ export const productsContainer = {
   createProduct: createCreateProductUseCase(productRepository),
   updateProduct: createUpdateProductUseCase(productRepository),
   deleteProduct: createDeleteProductUseCase(productRepository),
-  listCommissionRateOptions: createListCommissionRateOptionsUseCase(commissionRateRepository),
+  listCommissionRates: createListCommissionRatesUseCase(commissionRateRepository),
 };

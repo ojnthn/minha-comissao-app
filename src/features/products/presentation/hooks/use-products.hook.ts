@@ -5,13 +5,9 @@ import type { OffsetPagination } from '../../../../shared/types/pagination';
 import type { productsContainer } from '../../products.container';
 
 const PAGE_SIZE = 10;
+const COMMISSION_RATE_PAGE_SIZE = 10;
 
-export interface ProductFormState {
-  nome: string;
-  percentualComissaoId: string;
-}
-
-const EMPTY_FORM: ProductFormState = { nome: '', percentualComissaoId: '' };
+const EMPTY_NOME = '';
 
 export function useProducts(products: typeof productsContainer) {
   const [page, setPage] = useState(1);
@@ -21,9 +17,14 @@ export function useProducts(products: typeof productsContainer) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [commissionRates, setCommissionRates] = useState<CommissionRate[]>([]);
+  const [loadedCommissionRates, setLoadedCommissionRates] = useState<CommissionRate[]>([]);
+  const [commissionRatePage, setCommissionRatePage] = useState(1);
+  const [commissionRateHasMore, setCommissionRateHasMore] = useState(false);
+  const [commissionRateLoading, setCommissionRateLoading] = useState(false);
+  const [commissionRateSearch, setCommissionRateSearch] = useState('');
 
-  const [form, setForm] = useState<ProductFormState>(EMPTY_FORM);
+  const [nome, setNome] = useState(EMPTY_NOME);
+  const [selectedCommissionRate, setSelectedCommissionRate] = useState<CommissionRate | null>(null);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -60,32 +61,63 @@ export function useProducts(products: typeof productsContainer) {
 
   useEffect(() => {
     let active = true;
-    products.listCommissionRateOptions().then((result) => {
-      if (active) setCommissionRates(result);
-    });
+    setCommissionRateLoading(true);
+
+    products
+      .listCommissionRates({ page: 1, limit: COMMISSION_RATE_PAGE_SIZE })
+      .then((result) => {
+        if (!active) return;
+        setLoadedCommissionRates(result.commissionRates);
+        setCommissionRatePage(1);
+        setCommissionRateHasMore(result.pagination.next !== null);
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (active) setCommissionRateLoading(false);
+      });
+
     return () => {
       active = false;
     };
   }, [products]);
 
+  async function loadMoreCommissionRates() {
+    if (!commissionRateHasMore || commissionRateLoading) return;
+    const nextPage = commissionRatePage + 1;
+    setCommissionRateLoading(true);
+    try {
+      const result = await products.listCommissionRates({ page: nextPage, limit: COMMISSION_RATE_PAGE_SIZE });
+      setLoadedCommissionRates((current) => [...current, ...result.commissionRates]);
+      setCommissionRatePage(nextPage);
+      setCommissionRateHasMore(result.pagination.next !== null);
+    } catch {
+      // mantém hasMore como estava — usuário pode tentar rolar de novo
+    } finally {
+      setCommissionRateLoading(false);
+    }
+  }
+
   const hasNextPage = !!pagination && pagination.next !== null;
   const hasPreviousPage = page > 1;
 
-  function setNome(value: string) {
-    setForm((current) => ({ ...current, nome: value }));
-  }
-
-  function setPercentualComissaoId(value: string) {
-    setForm((current) => ({ ...current, percentualComissaoId: value }));
-  }
+  const trimmedCommissionRateSearch = commissionRateSearch.trim().toLowerCase();
+  /** Backend (`GET /comissao-porcentagem`) só tem page/limit, sem filtro de busca — a busca aqui é client-side sobre o que já foi carregado, não sobre o catálogo inteiro. */
+  const filteredCommissionRateOptions = trimmedCommissionRateSearch
+    ? loadedCommissionRates.filter((rate) => rate.name.toLowerCase().includes(trimmedCommissionRateSearch))
+    : loadedCommissionRates;
+  const effectiveCommissionRateHasMore = trimmedCommissionRateSearch ? false : commissionRateHasMore;
+  const commissionRateNameById = new Map(loadedCommissionRates.map((rate) => [rate.id, rate.name]));
 
   function startEdit(product: Product) {
-    setForm({ nome: product.name, percentualComissaoId: String(product.defaultCommissionRateId) });
+    const known = loadedCommissionRates.find((rate) => rate.id === product.defaultCommissionRateId);
+    setNome(product.name);
+    setSelectedCommissionRate(known ?? { id: product.defaultCommissionRateId, name: `Comissão #${product.defaultCommissionRateId}` });
     setEditingId(product.id);
   }
 
   function cancelEdit() {
-    setForm(EMPTY_FORM);
+    setNome(EMPTY_NOME);
+    setSelectedCommissionRate(null);
     setEditingId(null);
   }
 
@@ -93,20 +125,21 @@ export function useProducts(products: typeof productsContainer) {
     setRefreshKey((current) => current + 1);
   }
 
-  const isValid = form.nome.trim() !== '' && form.percentualComissaoId !== '';
+  const isValid = nome.trim() !== '' && selectedCommissionRate !== null;
 
   async function submit() {
-    if (!isValid) return;
+    if (!isValid || !selectedCommissionRate) return;
     setSubmitting(true);
     try {
-      const params = { name: form.nome.trim(), defaultCommissionRateId: Number(form.percentualComissaoId) };
+      const params = { name: nome.trim(), defaultCommissionRateId: selectedCommissionRate.id };
       const wasEditing = editingId !== null;
       if (editingId !== null) {
         await products.updateProduct(editingId, params);
       } else {
         await products.createProduct(params);
       }
-      setForm(EMPTY_FORM);
+      setNome(EMPTY_NOME);
+      setSelectedCommissionRate(null);
       setEditingId(null);
       showToast(wasEditing ? 'Chapa atualizada!' : 'Chapa adicionada!');
       if (page === 1) refresh();
@@ -138,10 +171,17 @@ export function useProducts(products: typeof productsContainer) {
     hasPreviousPage,
     goToNextPage: () => hasNextPage && setPage((current) => current + 1),
     goToPreviousPage: () => hasPreviousPage && setPage((current) => current - 1),
-    commissionRates,
-    form,
+    commissionRateOptions: filteredCommissionRateOptions,
+    commissionRateNameById,
+    commissionRateLoading,
+    commissionRateHasMore: effectiveCommissionRateHasMore,
+    onCommissionRateSearchChange: setCommissionRateSearch,
+    loadMoreCommissionRates,
+    hasAnyCommissionRate: loadedCommissionRates.length > 0,
+    nome,
     setNome,
-    setPercentualComissaoId,
+    selectedCommissionRate,
+    setSelectedCommissionRate,
     isValid,
     isEditing: editingId !== null,
     submitting,
