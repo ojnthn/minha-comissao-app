@@ -18,6 +18,23 @@ export interface OrderListResult {
   pagination: OffsetPagination;
 }
 
+export interface CreateOrderItemParams {
+  productId: number;
+  m2: number;
+  pricePerM2: number;
+  commissionRatePercent: number;
+}
+
+export interface CreateOrderParams {
+  carpenterId: number;
+  items: CreateOrderItemParams[];
+}
+
+export interface CreateOrderResult {
+  id: number;
+}
+
 export interface OrderRepository {
   list(params: OrderListParams): Promise<OrderListResult>;
+  create(params: CreateOrderParams): Promise<CreateOrderResult>;
 }

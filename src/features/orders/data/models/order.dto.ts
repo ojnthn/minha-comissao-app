@@ -24,3 +24,22 @@ export interface ListPedidosResponseDto {
   pagination: { current: number; next: number | null };
   detalhes: PedidoDto[];
 }
+
+export interface CreatePedidoProdutoItemDto {
+  idProduto: number;
+  valorProduto: number;
+  valorPorcentagem: number;
+}
+
+export interface CreatePedidoRequestDto {
+  valor: number;
+  idMarceneiro: number;
+  produtos: CreatePedidoProdutoItemDto[];
+}
+
+export interface CreatePedidoResponseDto {
+  id: number;
+  valor: number;
+  idMarceneiro: number;
+  produtos: number[];
+}

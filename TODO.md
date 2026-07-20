@@ -14,27 +14,22 @@ divergência de contrato, nunca assumir/inventar endpoint ou campo.
   no frontend sem um endpoint que devolva números crus ou já agregados. Os
   dois `StatCard` da home continuam mostrando `"Indisponível"`
   (`src/features/dashboard/presentation/pages/dashboard.page.tsx`).
-- [x] **`Produto` agora tem campo de preço.** Reaberto e resolvido de novo,
-  na direção oposta da entrada anterior: `POST/PATCH /produtos` no foundation
-  passou a ter `valorPorM2` (double, obrigatório) e `ProdutoForm`
-  (design-system, `@ojnthn/minhas-venda-design-system@1.0.6`) reintroduziu o
-  campo "Valor do m²". `features/products` (`Product.pricePerM2`) já consome
-  o campo real do backend. **Segue em aberto**: `PedidoForm`/`orders` ainda
-  não usam `pricePerM2` no cálculo do pedido (`orderValue = m2 *
-  product.pricePerM2` da seção 6 do `ARCHITECTURE.md`) — `new-order.page.tsx`
-  continua um placeholder ("em construção"), sem usecase/hook de criação de
-  pedido implementado. Isso é o próximo passo pra fechar o ciclo completo.
-- [ ] **`ComissaoPorcentagem` não tem CRUD completo, mas o `GET` existe.**
-  `docs/new-feature-guide.md` segue correto quanto a não ter
-  POST/PATCH/DELETE — feature `commission-rates` (tela própria de gestão)
-  continua removida do app (pasta, rota `/commission-rates`, item
-  "Comissões" do Sidebar e `SidebarScreen` no design-system) até esses
-  endpoints existirem — ver `CLAUDE.md` seção 1. Mas `GET
-  /comissao-porcentagem` (`{ pagination, detalhes: [{ id, descricao }] }`)
-  é real e já está em uso: `features/products` consome via
-  `commission-rate.repository.ts`/`list-commission-rate-options.usecase.ts`
-  só pra popular o select "Comissão padrão" do cadastro de chapa — não é
-  a feature `commission-rates` de volta, só leitura pontual. Onboarding
+- [x] **`Produto` agora tem campo de preço.** `POST/PATCH /produtos` no
+  foundation tem `valorPorM2` (double, obrigatório) e `features/products`
+  (`Product.pricePerM2`) consome o campo real do backend.
+- [x] **Cadastro de pedido (`new-order.page.tsx`) implementado (2026-07-20).**
+  Deixou de ser placeholder: `orders` ganhou `domain/entities/order.entity.ts`
+  (itens + cálculo puro), `create-order.usecase.ts`,
+  `order-form-options.repository.ts` (port pra marceneiro/produto/percentual),
+  `use-order-form.hook.ts` e a página real, usando os novos organisms
+  `PedidoInfoForm`/`PedidoItemForm` do design-system (substituíram o
+  `PedidoForm` de item único, nunca consumido). Pedido pode ter N produtos —
+  ver seção 6 do `ARCHITECTURE.md`.
+- [x] **`ComissaoPorcentagem`: `GET /comissao-porcentagem` agora expõe
+  `valor` numérico** (antes só `descricao`, string formatada tipo `"7%"`),
+  necessário pro cálculo de comissão em `orders`. Segue sem POST/PATCH/DELETE
+  — a feature `commission-rates` (tela própria de gestão) continua removida
+  do app até esses endpoints existirem, ver `CLAUDE.md` seção 1. Onboarding
   da home segue só checando `hasProducts`, não percentual.
 
 ## Frontend (`minha-comissao-app`)

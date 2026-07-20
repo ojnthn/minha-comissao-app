@@ -1,6 +1,13 @@
-import type { OrderRepository, OrderListParams, OrderListResult } from '../../domain/repositories/order.repository';
+import type {
+  OrderRepository,
+  OrderListParams,
+  OrderListResult,
+  CreateOrderParams,
+  CreateOrderResult,
+} from '../../domain/repositories/order.repository';
 import type { Order } from '../../domain/entities/order.entity';
-import type { PedidoDto } from '../models/order.dto';
+import { calculateOrderItemValue, calculateOrderTotals } from '../../domain/entities/order.entity';
+import type { PedidoDto, CreatePedidoProdutoItemDto } from '../models/order.dto';
 import { createOrderHttpDatasource } from '../datasources/order-http.datasource';
 
 function toDomain(dto: PedidoDto): Order {
@@ -33,6 +40,18 @@ export function createOrderRepository(): OrderRepository {
         orders: response.detalhes.map(toDomain),
         pagination: response.pagination,
       };
+    },
+
+    async create(params: CreateOrderParams): Promise<CreateOrderResult> {
+      const { value: valor } = calculateOrderTotals(params.items);
+      const produtos: CreatePedidoProdutoItemDto[] = params.items.map((item) => ({
+        idProduto: item.productId,
+        valorProduto: calculateOrderItemValue(item),
+        valorPorcentagem: item.commissionRatePercent,
+      }));
+
+      const response = await datasource.create({ valor, idMarceneiro: params.carpenterId, produtos });
+      return { id: response.id };
     },
   };
 }

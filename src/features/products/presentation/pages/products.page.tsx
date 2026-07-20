@@ -97,7 +97,11 @@ export function ProductsPage() {
             ? { id: String(selectedCommissionRate.id), optionLabel: selectedCommissionRate.name }
             : null
         }
-        onPercentualChange={(option) => setSelectedCommissionRate({ id: Number(option.id), name: option.optionLabel })}
+        onPercentualChange={(option) => {
+          const id = Number(option.id);
+          const known = commissionRateOptions.find((rate) => rate.id === id);
+          setSelectedCommissionRate({ id, name: option.optionLabel, value: known?.value ?? 0 });
+        }}
         percentuaisOptions={commissionRateOptions.map((rate) => ({ id: String(rate.id), optionLabel: rate.name }))}
         onPercentuaisSearchChange={onCommissionRateSearchChange}
         percentuaisLoading={commissionRateLoading}

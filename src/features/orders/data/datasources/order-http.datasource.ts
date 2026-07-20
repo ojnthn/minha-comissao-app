@@ -1,5 +1,5 @@
 import { httpClient } from '../../../../shared/http/http-client';
-import type { ListPedidosResponseDto } from '../models/order.dto';
+import type { CreatePedidoRequestDto, CreatePedidoResponseDto, ListPedidosResponseDto } from '../models/order.dto';
 import type { OrderListParams } from '../../domain/repositories/order.repository';
 
 export function createOrderHttpDatasource() {
@@ -14,5 +14,6 @@ export function createOrderHttpDatasource() {
 
       return httpClient.get<ListPedidosResponseDto>(`/pedidos?${query.toString()}`);
     },
+    create: (body: CreatePedidoRequestDto) => httpClient.post<CreatePedidoResponseDto>('/pedidos', body),
   };
 }

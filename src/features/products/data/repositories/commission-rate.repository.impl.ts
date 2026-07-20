@@ -8,7 +8,7 @@ import type { ComissaoPorcentagemDto } from '../models/commission-rate.dto';
 import { createCommissionRateHttpDatasource } from '../datasources/commission-rate-http.datasource';
 
 function toDomain(dto: ComissaoPorcentagemDto): CommissionRate {
-  return { id: dto.id, name: dto.descricao };
+  return { id: dto.id, name: dto.descricao, value: dto.valor };
 }
 
 export function createCommissionRateRepository(): CommissionRateRepository {

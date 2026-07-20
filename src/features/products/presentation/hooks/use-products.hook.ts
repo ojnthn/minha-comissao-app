@@ -120,7 +120,9 @@ export function useProducts(products: typeof productsContainer) {
     const known = loadedCommissionRates.find((rate) => rate.id === product.defaultCommissionRateId);
     setNome(product.name);
     setValorPorM2(String(product.pricePerM2));
-    setSelectedCommissionRate(known ?? { id: product.defaultCommissionRateId, name: `Comissão #${product.defaultCommissionRateId}` });
+    setSelectedCommissionRate(
+      known ?? { id: product.defaultCommissionRateId, name: `Comissão #${product.defaultCommissionRateId}`, value: 0 },
+    );
     setEditingId(product.id);
   }
 

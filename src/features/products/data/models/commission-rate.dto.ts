@@ -1,6 +1,7 @@
 export interface ComissaoPorcentagemDto {
   id: number;
   descricao: string;
+  valor: number;
 }
 
 /** Endpoint usa a chave "detalhes" — igual /pedidos, diferente de /produtos ("details"). */

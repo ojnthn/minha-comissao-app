@@ -174,32 +174,52 @@ exposto no foundation (só `GET`), então não tem tela própria; ver
 
 ## 6. Cálculo de negócio (regra central da order)
 
+Um pedido tem **N itens** (`PedidoProduto[]` no backend, `ArrayMinSize(1)` em
+`POST /pedidos`) — não é mais modelado como item único:
+
 ```
-orderValue      = m2 * product.pricePerM2
-orderCommission = orderValue * (commissionRate.value / 100)
+itemValue       = m2 * product.pricePerM2
+itemCommission  = itemValue * (commissionRate.percent / 100)
+orderValue      = soma de itemValue de todos os itens
+orderCommission = soma de itemCommission de todos os itens
 ```
 
-- Regra pura vive em `domain/entities/order.entity.ts` (função sem I/O).
-- Orquestração (recalcular a cada mudança de product/m2/commissionRate) vive
-  em `presentation/hooks/use-order-form.hook.ts`, via `useMemo`.
-- `isValid` também é calculado no hook (campos obrigatórios preenchidos +
-  product/commissionRate existentes na lista carregada) — nunca delegado ao
-  componente do design-system.
-- `orderValueFmt`/`orderCommissionFmt` derivados do resultado bruto só na
-  `orders.page.tsx`/`new-order.page.tsx`, na hora de montar as props do
-  `PedidoForm` (o componente em si, do design-system, ainda se chama
-  `PedidoForm` — é nome fixo do outro repo, não traduzir na hora de importar).
-- **Atenção**: `Produto.pricePerM2` (`valorPorM2` no contrato real, ver
-  `features/products/data/models/product.dto.ts`) já existe e é obrigatório
-  no backend (ver `TODO.md`). Mas `POST /pedidos` continua esperando
-  `produtos: [{ idProduto, valorProduto, valorPorcentagem }]`, sem campo de
-  `m2` — `valorProduto` ainda não é derivado de `pricePerM2 * m2`
-  automaticamente em nenhum lugar do app, porque a feature de criação de
-  pedido (`new-order.page.tsx`) ainda não foi implementada (placeholder).
-  Esse mapeamento (m2 × pricePerM2 → valorProduto) é responsabilidade de
-  `data/repositories/order.repository.impl.ts` quando essa feature for
-  implementada — se a regra de conversão não estiver clara nessa hora,
-  reportar a divergência em vez de assumir.
+- Regra pura vive em `domain/entities/order.entity.ts` (`calculateOrderItemValue`,
+  `calculateOrderItemCommission`, `calculateOrderTotals` — funções sem I/O).
+- Orquestração (item em edição + lista de itens já adicionados ao pedido em
+  construção, recalculando a cada mudança) vive em
+  `presentation/hooks/use-order-form.hook.ts`, via `useMemo`.
+- `isValid` (pedido: marceneiro selecionado + ao menos um item) e `itemIsValid`
+  (item em edição: produto/m²/percentual preenchidos) são calculados no hook —
+  nunca delegado ao componente do design-system.
+- `*Fmt` derivados do resultado bruto só em `new-order.page.tsx`, na hora de
+  montar as props de `PedidoInfoForm`/`PedidoItemForm` (organisms do
+  design-system — substituíram o antigo `PedidoForm` de item único, que nunca
+  chegou a ser consumido pelo app; ver `docs/DECISIONS.md` do
+  `minha-venda-design-system`).
+- **Mapeamento `m2 × pricePerM2 → valorProduto`**: `POST /pedidos` espera
+  `produtos: [{ idProduto, valorProduto, valorPorcentagem }]`, sem campo `m2`
+  — o backend nunca recalcula `valor`/`valorProduto` a partir dos itens (ver
+  `CONTEXT.md` do módulo `pedido` no `minha-venda-foundation`: "Recalcular
+  `valor` do pedido a partir dos produtos" está fora do escopo do backend por
+  decisão explícita). Esse mapeamento é feito em
+  `data/repositories/order.repository.impl.ts`, reaproveitando as mesmas
+  funções puras do passo anterior (single source of truth do cálculo).
+- **Marceneiro/produto/percentual no formulário de novo pedido**: a tela
+  precisa desses três seletores, mas `orders` não pode importar
+  `carpenters`/`products` diretamente. Resolvido com um port
+  (`domain/repositories/order-form-options.repository.ts`,
+  `OrderFormOptionsPort`) implementado em `app/new-order.composition.ts`
+  (mesmo padrão de `app/dashboard.composition.ts`) e injetado como prop em
+  `NewOrderPage` via `app/routes.tsx`.
+- **Percentual de comissão**: `GET /comissao-porcentagem` passou a expor o
+  campo numérico `valor` (antes só `descricao`, uma string formatada tipo
+  `"7%"` — não confiável como fonte de cálculo). Decisão tomada junto com o
+  usuário ao implementar esta feature; ver `CONTEXT.md` do módulo
+  `comissao-porcentagem` no `minha-venda-foundation`.
+- **Campo "Data"**: `POST /pedidos` não aceita data customizada —
+  `logDataCadastro` é sempre gerado pelo backend na criação. `PedidoInfoForm`
+  mostra a data de hoje só como confirmação visual, sem input real.
 
 ## 7. Auth
 

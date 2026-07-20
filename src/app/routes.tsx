@@ -12,6 +12,7 @@ import { authContainer } from '../features/auth/auth.container';
 import { useCurrentUser } from '../features/auth/presentation/hooks/use-current-user.hook';
 import { getInitials } from '../features/auth/domain/entities/session.entity';
 import { dashboardContainer } from './dashboard.composition';
+import { orderFormOptions } from './new-order.composition';
 
 /**
  * Única fonte de verdade path <-> screen (Sidebar.activeScreen).
@@ -102,7 +103,7 @@ export function AppRoutes() {
                   element={<DashboardPage dashboardContainer={dashboardContainer} userName={userName} />}
                 />
                 <Route path="/orders" element={<OrdersPage />} />
-                <Route path="/orders/new" element={<NewOrderPage />} />
+                <Route path="/orders/new" element={<NewOrderPage formOptions={orderFormOptions} />} />
                 <Route path="/products" element={<ProductsPage />} />
                 <Route path="/carpenters" element={<CarpentersPage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
