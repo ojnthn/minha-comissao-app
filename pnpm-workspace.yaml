@@ -1,2 +1,2 @@
-overrides:
-  minhas-venda-design-system: link:../minha-venda-design-system
+minimumReleaseAgeExclude:
+  - '@ojnthn/minhas-venda-design-system@1.0.0'

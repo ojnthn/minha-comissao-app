@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { Button, FormField, Toast, colors, fontFamily, fontSize, fontWeight, radius, spacing } from 'minhas-venda-design-system';
+import { Button, FormField, Toast, colors, fontFamily, fontSize, fontWeight, radius, spacing } from '@ojnthn/minhas-venda-design-system';
 import { useAuth } from '../hooks/use-auth.hook';
 
 interface LoginPageProps {

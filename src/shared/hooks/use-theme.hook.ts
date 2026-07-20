@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import type { Theme } from 'minhas-venda-design-system';
+import type { Theme } from '@ojnthn/minhas-venda-design-system';
 
 const STORAGE_KEY = 'minha-comissao:theme';
 

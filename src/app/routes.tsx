@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
-import { AppShellTemplate, type SidebarScreen } from 'minhas-venda-design-system';
+import { AppShellTemplate, type SidebarScreen } from '@ojnthn/minhas-venda-design-system';
 import { useTheme } from '../shared/hooks/use-theme.hook';
 import { DashboardPage } from '../features/dashboard/presentation/pages/dashboard.page';
 import { NewOrderPage } from '../features/orders/presentation/pages/new-order.page';

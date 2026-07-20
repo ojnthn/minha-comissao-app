@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { DashboardSummary, OnboardingCard, colors, fontSize, fontWeight, spacing } from 'minhas-venda-design-system';
+import { DashboardSummary, OnboardingCard, colors, fontSize, fontWeight, spacing } from '@ojnthn/minhas-venda-design-system';
 import type { DashboardContainer } from '../../dashboard.container';
 import { useDashboard } from '../hooks/use-dashboard.hook';
 
