@@ -1,0 +1,4 @@
+export interface CommissionRate {
+  id: number;
+  name: string;
+}

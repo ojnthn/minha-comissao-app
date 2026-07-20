@@ -1,4 +1,10 @@
-import type { ProductRepository, ProductListParams, ProductListResult } from '../../domain/repositories/product.repository';
+import type {
+  ProductRepository,
+  ProductListParams,
+  ProductListResult,
+  ProductCreateParams,
+  ProductUpdateParams,
+} from '../../domain/repositories/product.repository';
 import type { Product } from '../../domain/entities/product.entity';
 import type { ProdutoDto } from '../models/product.dto';
 import { createProductHttpDatasource } from '../datasources/product-http.datasource';
@@ -21,6 +27,26 @@ export function createProductRepository(): ProductRepository {
         products: response.details.map(toDomain),
         pagination: response.pagination,
       };
+    },
+
+    async create(params: ProductCreateParams): Promise<Product> {
+      const dto = await datasource.create({
+        nome: params.name,
+        idComissaoPorcentagemPadrao: params.defaultCommissionRateId,
+      });
+      return toDomain(dto);
+    },
+
+    async update(id: number, params: ProductUpdateParams): Promise<Product> {
+      const dto = await datasource.update(id, {
+        nome: params.name,
+        idComissaoPorcentagemPadrao: params.defaultCommissionRateId,
+      });
+      return toDomain(dto);
+    },
+
+    remove(id: number): Promise<void> {
+      return datasource.remove(id);
     },
   };
 }

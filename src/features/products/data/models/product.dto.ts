@@ -9,3 +9,13 @@ export interface ListProdutosResponseDto {
   pagination: { current: number; next: number | null };
   details: ProdutoDto[];
 }
+
+export interface CreateProdutoRequestDto {
+  nome: string;
+  idComissaoPorcentagemPadrao: number;
+}
+
+export interface UpdateProdutoRequestDto {
+  nome?: string;
+  idComissaoPorcentagemPadrao?: number;
+}
