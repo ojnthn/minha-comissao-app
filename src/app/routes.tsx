@@ -69,6 +69,10 @@ function ShellLayout({ children }: { children: (userName: string) => ReactNode }
         userName: user?.name ?? 'Indisponível',
         userRole: user?.email ?? 'Indisponível',
         userInitials: user ? getInitials(user.name) : '?',
+        onLogout: () => {
+          authContainer.logout();
+          navigate('/login', { replace: true });
+        },
       }}
       title={TITLE_BY_SCREEN[activeScreen]}
     >
