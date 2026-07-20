@@ -191,6 +191,10 @@ export function useOrderForm(orders: Pick<typeof ordersContainer, 'createOrder'>
 
   function addItem() {
     if (!itemIsValid || !selectedProduct || !selectedCommissionRate) return;
+    if (selectedProduct.pricePerM2 <= 0) {
+      showToast(`"${selectedProduct.name}" não tem valor por m² cadastrado. Edite a chapa antes de usá-la num pedido.`, 'danger');
+      return;
+    }
     const newItem: OrderItemDraft = {
       productId: selectedProduct.id,
       productName: selectedProduct.name,
