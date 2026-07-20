@@ -13,23 +13,25 @@ percentuais de comissão e registra pedidos. O app calcula valor do pedido e
 comissão a partir do que o usuário digita — nenhum cálculo é feito no backend
 nem no design system.
 
-4 telas (`screen` é valor fixo do `Sidebar` do design-system — não traduzir).
+5 telas (`screen` é valor fixo do `Sidebar` do design-system — não traduzir).
 Tela `percentuais`/"Comissões" foi removida (Sidebar, rotas e feature
 `commission-rates`) enquanto `ComissaoPorcentagem` não tiver CRUD exposto no
-foundation — ver `TODO.md`.
+foundation — ver `TODO.md`. Sem cadastro de percentual no app: os valores
+são fixos, configurados direto no banco pelo usuário.
 
-| screen key    | Página          | Organism principal          |
-| -------------- | --------------- | ---------------------------- |
-| `dashboard`    | Resumo          | `DashboardSummary`           |
-| `novo`         | Novo Pedido     | `PedidoForm`                 |
-| `pedidos`      | Meus Pedidos    | `PedidosList`                |
-| `produtos`     | Minhas Chapas   | `ProdutosList` + `ProdutoForm` |
+| screen key     | Página           | Organism principal              |
+| -------------- | ---------------- | -------------------------------- |
+| `dashboard`    | Resumo           | `DashboardSummary`               |
+| `novo`         | Novo Pedido      | `PedidoForm`                     |
+| `pedidos`      | Meus Pedidos     | `DataTable`                      |
+| `produtos`     | Minhas Chapas    | `DataTable` + `ProdutoForm`      |
+| `marceneiros`  | Meus Marceneiros | `DataTable` + `MarceneiroForm`   |
 
 ## 2. Stack e decisões de arquitetura
 
 - React 19 + TypeScript
 - Vite (SPA) — sem SSR, app interno de uso autenticado
-- `react-router-dom` para roteamento entre as 4 telas
+- `react-router-dom` para roteamento entre as 5 telas
 - Data-fetching: `fetch` nativo + hooks próprios (sem TanStack Query) —
   cálculo de negócio (valor/comissão) sempre no app, nunca delegado a lib
 - Gerenciador de pacotes: pnpm (padrão dos repos irmãos)
@@ -82,12 +84,18 @@ foundation — ver `TODO.md`.
   numérico para cálculo. O valor numérico vem do que foi enviado no
   create/update, guardado no estado local.
 - Paginação **não é uniforme** entre endpoints:
-  - `produtos`/`marceneiro`: `pagination.next` é `number | null`.
-  - `pedidos`: `next` **repete** o valor de `current` quando não há próxima
-    página (nunca é `null`). Comparar `next !== current`, não `next !== null`.
+  - `produtos`/`comissao-porcentagem`: `pagination.next` é `number | null`.
+  - `pedidos`/`marceneiro`: `next` **repete** o valor de `current` quando
+    não há próxima página (nunca é `null`). Comparar `next !== current`,
+    não `next !== null`. `marceneiro` também usa chaves diferentes no JSON
+    (`paginacao.atual`/`paginacao.proxima`, não `pagination.current`/`next`)
+    — tradução acontece em `carpenter.repository.impl.ts`.
   - Modelado em `shared/types/pagination.ts` como dois tipos distintos
     (`OffsetPagination` / `RepeatingPagination`) — nunca abstrair como se
-    fossem iguais.
+    fossem iguais. `orders/domain/repositories/order.repository.ts` ainda
+    usa `OffsetPagination` por engano (débito pré-existente, não corrigido
+    ainda) — `carpenters` é o primeiro a usar `RepeatingPagination` de
+    verdade.
 - Componentes do design-system recebem props `*Fmt` (moeda/data/percentual)
   **já formatadas como string** — formatar com `Intl.NumberFormat` /
   `Intl.DateTimeFormat` só em `presentation/pages/*.page.tsx`, nunca no

@@ -98,8 +98,7 @@ src/
     │   └── orders.container.ts
     │
     ├── products/                     (produtos — mesma receita)
-    ├── commission-rates/             (percentuais — idem)
-    ├── carpenters/                   (marceneiro — idem, hoje só usado como seletor dentro de orders)
+    ├── carpenters/                   (marceneiro — CRUD próprio, tela "Meus Marceneiros")
     ├── dashboard/                    (domain leve — usecases agregam dados de outras features via ports)
     └── auth/
         ├── domain/
@@ -118,7 +117,7 @@ src/
 ## 4. Roteamento (react-router)
 
 O `screen` do `Sidebar` é um valor fixo definido pelo `@mdf/design-system`
-(`dashboard` | `novo` | `pedidos` | `produtos` | `percentuais`) — esse
+(`dashboard` | `novo` | `pedidos` | `produtos` | `marceneiros`) — esse
 contrato não muda, é do outro repo. O que muda é o path e o arquivo de
 page, que seguem a nomenclatura em inglês:
 
@@ -128,7 +127,11 @@ page, que seguem a nomenclatura em inglês:
 | `novo` | `/orders/new` | `features/orders/presentation/pages/new-order.page.tsx` |
 | `pedidos` | `/orders` | `features/orders/presentation/pages/orders.page.tsx` |
 | `produtos` | `/products` | `features/products/presentation/pages/products.page.tsx` |
-| `percentuais` | `/commission-rates` | `features/commission-rates/presentation/pages/commission-rates.page.tsx` |
+| `marceneiros` | `/carpenters` | `features/carpenters/presentation/pages/carpenters.page.tsx` |
+
+`percentuais` não existe como screen — `ComissaoPorcentagem` não tem CRUD
+exposto no foundation (só `GET`), então não tem tela própria; ver
+`TODO.md`.
 
 - `app/routes.tsx` é o único arquivo que importa pages de todas as features
   — nenhuma feature importa outra diretamente.
@@ -161,10 +164,13 @@ page, que seguem a nomenclatura em inglês:
   virar problema real, é decisão a discutir, não implementar "por via das
   dúvidas".
 - Paginação: `shared/types/pagination.ts` já modela as duas variantes reais
-  da API (`OffsetPagination` para products/carpenters, `RepeatingPagination`
-  para orders) — cada `*.repository.ts` usa a que for correta pro seu
-  endpoint, nunca uma função genérica que assuma `next: number | null` pra
-  tudo.
+  da API (`OffsetPagination` para products/comissao-porcentagem,
+  `RepeatingPagination` para pedidos/carpenters) — cada `*.repository.ts`
+  usa a que for correta pro seu endpoint, nunca uma função genérica que
+  assuma `next: number | null` pra
+  tudo. `orders/domain/repositories/order.repository.ts` ainda usa
+  `OffsetPagination` por engano (débito pré-existente) — `carpenters` é a
+  primeira feature a usar `RepeatingPagination` de fato.
 
 ## 6. Cálculo de negócio (regra central da order)
 

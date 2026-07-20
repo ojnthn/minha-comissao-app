@@ -6,6 +6,7 @@ import { DashboardPage } from '../features/dashboard/presentation/pages/dashboar
 import { NewOrderPage } from '../features/orders/presentation/pages/new-order.page';
 import { OrdersPage } from '../features/orders/presentation/pages/orders.page';
 import { ProductsPage } from '../features/products/presentation/pages/products.page';
+import { CarpentersPage } from '../features/carpenters/presentation/pages/carpenters.page';
 import { LoginPage } from '../features/auth/presentation/pages/login.page';
 import { authContainer } from '../features/auth/auth.container';
 import { useCurrentUser } from '../features/auth/presentation/hooks/use-current-user.hook';
@@ -21,6 +22,7 @@ const SCREEN_BY_PATH: Record<string, SidebarScreen> = {
   '/orders/new': 'novo',
   '/orders': 'pedidos',
   '/products': 'produtos',
+  '/carpenters': 'marceneiros',
 };
 
 const PATH_BY_SCREEN: Record<SidebarScreen, string> = {
@@ -28,6 +30,7 @@ const PATH_BY_SCREEN: Record<SidebarScreen, string> = {
   novo: '/orders/new',
   pedidos: '/orders',
   produtos: '/products',
+  marceneiros: '/carpenters',
 };
 
 const TITLE_BY_SCREEN: Record<SidebarScreen, string> = {
@@ -35,6 +38,7 @@ const TITLE_BY_SCREEN: Record<SidebarScreen, string> = {
   novo: 'Novo Pedido',
   pedidos: 'Meus Pedidos',
   produtos: 'Minhas Chapas',
+  marceneiros: 'Meus Marceneiros',
 };
 
 function screenForPath(pathname: string): SidebarScreen {
@@ -100,6 +104,7 @@ export function AppRoutes() {
                 <Route path="/orders" element={<OrdersPage />} />
                 <Route path="/orders/new" element={<NewOrderPage />} />
                 <Route path="/products" element={<ProductsPage />} />
+                <Route path="/carpenters" element={<CarpentersPage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             )}
