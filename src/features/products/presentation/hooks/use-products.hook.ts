@@ -24,9 +24,12 @@ export function useProducts(products: typeof productsContainer) {
   const [commissionRateSearch, setCommissionRateSearch] = useState('');
 
   const [nome, setNome] = useState(EMPTY_NOME);
+  const [valorPorM2, setValorPorM2] = useState(EMPTY_NOME);
   const [selectedCommissionRate, setSelectedCommissionRate] = useState<CommissionRate | null>(null);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  const [searchTerm, setSearchTerm] = useState(EMPTY_NOME);
 
   const [toast, setToast] = useState<{ message: string; variant: 'success' | 'danger' } | null>(null);
 
@@ -41,7 +44,7 @@ export function useProducts(products: typeof productsContainer) {
     setError(null);
 
     products
-      .listProducts({ page, limit: PAGE_SIZE })
+      .listProducts({ page, limit: PAGE_SIZE, nome: searchTerm.trim() || undefined })
       .then((result) => {
         if (!active) return;
         setItems(result.products);
@@ -57,7 +60,12 @@ export function useProducts(products: typeof productsContainer) {
     return () => {
       active = false;
     };
-  }, [products, page, refreshKey]);
+  }, [products, page, refreshKey, searchTerm]);
+
+  function search(term: string) {
+    setSearchTerm(term);
+    setPage(1);
+  }
 
   useEffect(() => {
     let active = true;
@@ -111,12 +119,14 @@ export function useProducts(products: typeof productsContainer) {
   function startEdit(product: Product) {
     const known = loadedCommissionRates.find((rate) => rate.id === product.defaultCommissionRateId);
     setNome(product.name);
+    setValorPorM2(String(product.pricePerM2));
     setSelectedCommissionRate(known ?? { id: product.defaultCommissionRateId, name: `Comissão #${product.defaultCommissionRateId}` });
     setEditingId(product.id);
   }
 
   function cancelEdit() {
     setNome(EMPTY_NOME);
+    setValorPorM2(EMPTY_NOME);
     setSelectedCommissionRate(null);
     setEditingId(null);
   }
@@ -125,13 +135,19 @@ export function useProducts(products: typeof productsContainer) {
     setRefreshKey((current) => current + 1);
   }
 
-  const isValid = nome.trim() !== '' && selectedCommissionRate !== null;
+  const parsedValorPorM2 = Number(valorPorM2.replace(',', '.'));
+  const isValid =
+    nome.trim() !== '' && valorPorM2.trim() !== '' && Number.isFinite(parsedValorPorM2) && selectedCommissionRate !== null;
 
   async function submit() {
     if (!isValid || !selectedCommissionRate) return;
     setSubmitting(true);
     try {
-      const params = { name: nome.trim(), defaultCommissionRateId: selectedCommissionRate.id };
+      const params = {
+        name: nome.trim(),
+        pricePerM2: parsedValorPorM2,
+        defaultCommissionRateId: selectedCommissionRate.id,
+      };
       const wasEditing = editingId !== null;
       if (editingId !== null) {
         await products.updateProduct(editingId, params);
@@ -139,6 +155,7 @@ export function useProducts(products: typeof productsContainer) {
         await products.createProduct(params);
       }
       setNome(EMPTY_NOME);
+      setValorPorM2(EMPTY_NOME);
       setSelectedCommissionRate(null);
       setEditingId(null);
       showToast(wasEditing ? 'Chapa atualizada!' : 'Chapa adicionada!');
@@ -180,6 +197,10 @@ export function useProducts(products: typeof productsContainer) {
     hasAnyCommissionRate: loadedCommissionRates.length > 0,
     nome,
     setNome,
+    valorPorM2,
+    setValorPorM2,
+    searchTerm,
+    search,
     selectedCommissionRate,
     setSelectedCommissionRate,
     isValid,

@@ -189,12 +189,17 @@ orderCommission = orderValue * (commissionRate.value / 100)
   `orders.page.tsx`/`new-order.page.tsx`, na hora de montar as props do
   `PedidoForm` (o componente em si, do design-system, ainda se chama
   `PedidoForm` — é nome fixo do outro repo, não traduzir na hora de importar).
-- **Atenção**: o modelo `m2`/`pricePerM2` vem da documentação do
-  design-system; o contrato real de `POST /pedidos` no foundation espera
+- **Atenção**: `Produto.pricePerM2` (`valorPorM2` no contrato real, ver
+  `features/products/data/models/product.dto.ts`) já existe e é obrigatório
+  no backend (ver `TODO.md`). Mas `POST /pedidos` continua esperando
   `produtos: [{ idProduto, valorProduto, valorPorcentagem }]`, sem campo de
-  `m2` explícito. Esse mapeamento (m2 → valorProduto) é responsabilidade do
-  `data/repositories/order.repository.impl.ts` — se a regra de conversão
-  não estiver clara, reportar a divergência em vez de assumir.
+  `m2` — `valorProduto` ainda não é derivado de `pricePerM2 * m2`
+  automaticamente em nenhum lugar do app, porque a feature de criação de
+  pedido (`new-order.page.tsx`) ainda não foi implementada (placeholder).
+  Esse mapeamento (m2 × pricePerM2 → valorProduto) é responsabilidade de
+  `data/repositories/order.repository.impl.ts` quando essa feature for
+  implementada — se a regra de conversão não estiver clara nessa hora,
+  reportar a divergência em vez de assumir.
 
 ## 7. Auth
 

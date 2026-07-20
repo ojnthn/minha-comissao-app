@@ -14,13 +14,16 @@ divergência de contrato, nunca assumir/inventar endpoint ou campo.
   no frontend sem um endpoint que devolva números crus ou já agregados. Os
   dois `StatCard` da home continuam mostrando `"Indisponível"`
   (`src/features/dashboard/presentation/pages/dashboard.page.tsx`).
-- [x] **`Produto` não tem campo de preço.** O real (`nome` +
-  `idComissaoPorcentagemPadrao`) diverge do que `CLAUDE.md`/design-system
-  documentavam (`Produto.valorPorM2`). Resolvido ao implementar o
-  cadastro de produto: `ProdutoForm` (design-system, `@ojnthn/minhas-venda-design-system@1.0.3`)
-  removeu o campo `valorPorM2` — o valor de cada item continua digitado
-  direto na criação do pedido (`produtos[].valorProduto`), não vem de um
-  cadastro de preço por chapa.
+- [x] **`Produto` agora tem campo de preço.** Reaberto e resolvido de novo,
+  na direção oposta da entrada anterior: `POST/PATCH /produtos` no foundation
+  passou a ter `valorPorM2` (double, obrigatório) e `ProdutoForm`
+  (design-system, `@ojnthn/minhas-venda-design-system@1.0.6`) reintroduziu o
+  campo "Valor do m²". `features/products` (`Product.pricePerM2`) já consome
+  o campo real do backend. **Segue em aberto**: `PedidoForm`/`orders` ainda
+  não usam `pricePerM2` no cálculo do pedido (`orderValue = m2 *
+  product.pricePerM2` da seção 6 do `ARCHITECTURE.md`) — `new-order.page.tsx`
+  continua um placeholder ("em construção"), sem usecase/hook de criação de
+  pedido implementado. Isso é o próximo passo pra fechar o ciclo completo.
 - [ ] **`ComissaoPorcentagem` não tem CRUD completo, mas o `GET` existe.**
   `docs/new-feature-guide.md` segue correto quanto a não ter
   POST/PATCH/DELETE — feature `commission-rates` (tela própria de gestão)

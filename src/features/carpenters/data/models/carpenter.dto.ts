@@ -1,6 +1,7 @@
 export interface MarceneiroDto {
   id: number;
   nome: string;
+  telefone: string | null;
 }
 
 /**
@@ -15,8 +16,10 @@ export interface ListMarceneirosResponseDto {
 
 export interface CreateMarceneiroRequestDto {
   nome: string;
+  telefone?: string;
 }
 
 export interface UpdateMarceneiroRequestDto {
   nome?: string;
+  telefone?: string;
 }

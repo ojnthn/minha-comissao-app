@@ -1,6 +1,7 @@
 export interface ProdutoDto {
   id: number;
   nome: string;
+  valorPorM2: number;
   idComissaoPorcentagemPadrao: number;
 }
 
@@ -12,10 +13,12 @@ export interface ListProdutosResponseDto {
 
 export interface CreateProdutoRequestDto {
   nome: string;
+  valorPorM2: number;
   idComissaoPorcentagemPadrao: number;
 }
 
 export interface UpdateProdutoRequestDto {
   nome?: string;
+  valorPorM2?: number;
   idComissaoPorcentagemPadrao?: number;
 }

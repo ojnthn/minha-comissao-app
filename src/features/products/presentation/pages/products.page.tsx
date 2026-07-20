@@ -50,6 +50,10 @@ export function ProductsPage() {
     hasAnyCommissionRate,
     nome,
     setNome,
+    valorPorM2,
+    setValorPorM2,
+    searchTerm,
+    search,
     selectedCommissionRate,
     setSelectedCommissionRate,
     isValid,
@@ -62,8 +66,15 @@ export function ProductsPage() {
     toast,
   } = useProducts(productsContainer);
 
+  const currencyFormatter = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+
   const columns: DataTableColumn<Product>[] = [
     { key: 'name', header: 'Nome da chapa', render: (product) => product.name },
+    {
+      key: 'pricePerM2',
+      header: 'Valor do m²',
+      render: (product) => currencyFormatter.format(product.pricePerM2),
+    },
     {
       key: 'commission',
       header: 'Comissão padrão',
@@ -79,6 +90,8 @@ export function ProductsPage() {
         title={isEditing ? 'Editar chapa' : 'Adicionar chapa'}
         nome={nome}
         onNomeChange={setNome}
+        valorPorM2={valorPorM2}
+        onValorPorM2Change={setValorPorM2}
         percentualComissao={
           selectedCommissionRate
             ? { id: String(selectedCommissionRate.id), optionLabel: selectedCommissionRate.name }
@@ -114,6 +127,10 @@ export function ProductsPage() {
           rowKey={(product) => String(product.id)}
           isLoading={loading}
           emptyMessage="Nenhuma chapa cadastrada ainda."
+          searchable
+          searchValue={searchTerm}
+          onSearchChange={search}
+          searchPlaceholder="Buscar pelo nome..."
           rowActions={(product) => ({
             primaryAction: { label: 'Editar', icon: EditIcon, onSelect: () => startEdit(product) },
             secondaryActions: [

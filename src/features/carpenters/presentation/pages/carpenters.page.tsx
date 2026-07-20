@@ -43,6 +43,10 @@ export function CarpentersPage() {
     goToPreviousPage,
     nome,
     setNome,
+    telefone,
+    setTelefone,
+    searchTerm,
+    search,
     isValid,
     isEditing,
     submitting,
@@ -53,7 +57,10 @@ export function CarpentersPage() {
     toast,
   } = useCarpenters(carpentersContainer);
 
-  const columns: DataTableColumn<Carpenter>[] = [{ key: 'name', header: 'Nome', render: (carpenter) => carpenter.name }];
+  const columns: DataTableColumn<Carpenter>[] = [
+    { key: 'name', header: 'Nome', render: (carpenter) => carpenter.name },
+    { key: 'phone', header: 'Telefone/WhatsApp', render: (carpenter) => carpenter.phone ?? '—' },
+  ];
 
   if (error) return <div>{error}</div>;
 
@@ -63,6 +70,8 @@ export function CarpentersPage() {
         title={isEditing ? 'Editar marceneiro' : 'Adicionar marceneiro'}
         nome={nome}
         onNomeChange={setNome}
+        telefone={telefone}
+        onTelefoneChange={setTelefone}
         isValid={isValid && !submitting}
         submitLabel={isEditing ? 'Salvar alterações' : 'Adicionar marceneiro'}
         onSubmit={submit}
@@ -84,6 +93,10 @@ export function CarpentersPage() {
           rowKey={(carpenter) => String(carpenter.id)}
           isLoading={loading}
           emptyMessage="Nenhum marceneiro cadastrado ainda."
+          searchable
+          searchValue={searchTerm}
+          onSearchChange={search}
+          searchPlaceholder="Buscar pelo nome..."
           rowActions={(carpenter) => ({
             primaryAction: { label: 'Editar', icon: EditIcon, onSelect: () => startEdit(carpenter) },
             secondaryActions: [

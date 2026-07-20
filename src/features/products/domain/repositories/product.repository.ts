@@ -4,6 +4,7 @@ import type { OffsetPagination } from '../../../../shared/types/pagination';
 export interface ProductListParams {
   page: number;
   limit: number;
+  nome?: string;
 }
 
 export interface ProductListResult {
@@ -13,11 +14,13 @@ export interface ProductListResult {
 
 export interface ProductCreateParams {
   name: string;
+  pricePerM2: number;
   defaultCommissionRateId: number;
 }
 
 export interface ProductUpdateParams {
   name?: string;
+  pricePerM2?: number;
   defaultCommissionRateId?: number;
 }
 

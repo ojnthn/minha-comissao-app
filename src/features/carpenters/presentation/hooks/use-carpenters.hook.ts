@@ -16,8 +16,11 @@ export function useCarpenters(carpenters: typeof carpentersContainer) {
   const [error, setError] = useState<string | null>(null);
 
   const [nome, setNome] = useState(EMPTY_NOME);
+  const [telefone, setTelefone] = useState(EMPTY_NOME);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  const [searchTerm, setSearchTerm] = useState(EMPTY_NOME);
 
   const [toast, setToast] = useState<{ message: string; variant: 'success' | 'danger' } | null>(null);
 
@@ -32,7 +35,7 @@ export function useCarpenters(carpenters: typeof carpentersContainer) {
     setError(null);
 
     carpenters
-      .listCarpenters({ page, limit: PAGE_SIZE })
+      .listCarpenters({ page, limit: PAGE_SIZE, nome: searchTerm.trim() || undefined })
       .then((result) => {
         if (!active) return;
         setItems(result.carpenters);
@@ -48,18 +51,25 @@ export function useCarpenters(carpenters: typeof carpentersContainer) {
     return () => {
       active = false;
     };
-  }, [carpenters, page, refreshKey]);
+  }, [carpenters, page, refreshKey, searchTerm]);
+
+  function search(term: string) {
+    setSearchTerm(term);
+    setPage(1);
+  }
 
   const hasNextPage = !!pagination && pagination.next !== pagination.current;
   const hasPreviousPage = page > 1;
 
   function startEdit(carpenter: Carpenter) {
     setNome(carpenter.name);
+    setTelefone(carpenter.phone ?? EMPTY_NOME);
     setEditingId(carpenter.id);
   }
 
   function cancelEdit() {
     setNome(EMPTY_NOME);
+    setTelefone(EMPTY_NOME);
     setEditingId(null);
   }
 
@@ -73,7 +83,7 @@ export function useCarpenters(carpenters: typeof carpentersContainer) {
     if (!isValid) return;
     setSubmitting(true);
     try {
-      const params = { name: nome.trim() };
+      const params = { name: nome.trim(), phone: telefone.trim() || undefined };
       const wasEditing = editingId !== null;
       if (editingId !== null) {
         await carpenters.updateCarpenter(editingId, params);
@@ -81,6 +91,7 @@ export function useCarpenters(carpenters: typeof carpentersContainer) {
         await carpenters.createCarpenter(params);
       }
       setNome(EMPTY_NOME);
+      setTelefone(EMPTY_NOME);
       setEditingId(null);
       showToast(wasEditing ? 'Marceneiro atualizado!' : 'Marceneiro adicionado!');
       if (page === 1) refresh();
@@ -114,6 +125,10 @@ export function useCarpenters(carpenters: typeof carpentersContainer) {
     goToPreviousPage: () => hasPreviousPage && setPage((current) => current - 1),
     nome,
     setNome,
+    telefone,
+    setTelefone,
+    searchTerm,
+    search,
     isValid,
     isEditing: editingId !== null,
     submitting,

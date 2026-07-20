@@ -3,8 +3,10 @@ import type { CreateProdutoRequestDto, ListProdutosResponseDto, ProdutoDto, Upda
 
 export function createProductHttpDatasource() {
   return {
-    list: (page: number, limit: number) =>
-      httpClient.get<ListProdutosResponseDto>(`/produtos?page=${page}&limit=${limit}`),
+    list: (page: number, limit: number, nome?: string) =>
+      httpClient.get<ListProdutosResponseDto>(
+        `/produtos?page=${page}&limit=${limit}${nome ? `&nome=${encodeURIComponent(nome)}` : ''}`,
+      ),
     create: (body: CreateProdutoRequestDto) => httpClient.post<ProdutoDto>('/produtos', body),
     update: (id: number, body: UpdateProdutoRequestDto) => httpClient.patch<ProdutoDto>(`/produtos/${id}`, body),
     remove: (id: number) => httpClient.delete<void>(`/produtos/${id}`),
